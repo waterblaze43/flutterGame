@@ -10,34 +10,82 @@ void main() {
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  MainPage({super.key});
+
+  String playerA = "A";
+  String playerB = "B";
+
+  TextEditingController textControllerA = TextEditingController();
+  TextEditingController textControllerB = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
+        body: Stack(
+      alignment: Alignment.bottomCenter,
       children: [
-        Container(
-          color: Colors.blueAccent,
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height / 2,
-          child: Center(child: button(context)),
+        Center(child: button(context)),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            color: Colors.blueAccent,
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height / 2,
+          ),
         ),
         Container(
           color: Colors.redAccent,
           width: double.infinity,
           height: MediaQuery.of(context).size.height / 2,
-          child: Center(child: button(context)),
-        )
+        ),
+        Center(child: button(context)),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: nameEntry(context, "A", textControllerA, Colors.redAccent),
+          ),
+        ),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: nameEntry(context, "B", textControllerB, Colors.blueAccent),
+          ),
+        ),
       ],
     ));
+  }
+
+  Widget nameEntry(BuildContext context, String player,
+      TextEditingController textController, Color bColor) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+      decoration:
+          BoxDecoration(color: bColor, borderRadius: BorderRadius.circular(7)),
+      padding: EdgeInsets.all(0),
+      child: TextField(
+        controller: textController,
+        decoration: InputDecoration(
+          fillColor: Colors.redAccent,
+          hintStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.4)),
+          //contentPadding: EdgeInsets.all(20),
+          hintText: "Enter player $player name: ",
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
   }
 
   Widget button(BuildContext context) {
     return MaterialButton(
       onPressed: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => GamePage()));
+        if (textControllerA.text != "" && textControllerB.text != "") {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GamePage(
+                      playerA: textControllerA.text,
+                      playerB: textControllerB.text)));
+        }
       },
       height: 150,
       minWidth: 150,
@@ -49,7 +97,10 @@ class MainPage extends StatelessWidget {
 }
 
 class GamePage extends StatefulWidget {
-  GamePage({super.key});
+  String playerA = "";
+  String playerB = "";
+
+  GamePage({super.key, required this.playerA, required this.playerB});
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -113,7 +164,8 @@ class _GamePageState extends State<GamePage> {
                   heightA = 0;
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => ResultPage(
-                          winner: "B", winnerColor: Colors.blueAccent)));
+                          winner: widget.playerA,
+                          winnerColor: Colors.blueAccent)));
                 }
               });
             },
@@ -129,7 +181,7 @@ class _GamePageState extends State<GamePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Player B",
+                        widget.playerA,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -158,7 +210,8 @@ class _GamePageState extends State<GamePage> {
                   heightB = 0;
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (context) => ResultPage(
-                          winner: "A", winnerColor: Colors.redAccent)));
+                          winner: widget.playerB,
+                          winnerColor: Colors.redAccent)));
                 }
               });
             },
@@ -174,7 +227,7 @@ class _GamePageState extends State<GamePage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "Player A",
+                        widget.playerB,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -246,7 +299,7 @@ class _ResultPageState extends State<ResultPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Player ${widget.winner} has Won the Game",
+                "${widget.winner} has Won the Game",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               MaterialButton(
