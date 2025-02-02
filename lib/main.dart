@@ -5,7 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: SafeArea(child: MainPage()),
+    home: MainPage(),
   ));
 }
 
@@ -37,7 +37,9 @@ class MainPage extends StatelessWidget {
     return MaterialButton(
       onPressed: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => GamePage()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => SafeArea(child: GamePage())));
       },
       height: 150,
       minWidth: 150,
