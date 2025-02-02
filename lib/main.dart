@@ -76,7 +76,7 @@ class _GamePageState extends State<GamePage> {
         children: [
           InkWell(
             onTap: () {
-              HapticFeedback.vibrate();
+              HapticFeedback.mediumImpact();
               setState(() {
                 if (heightB + 50 < MediaQuery.of(context).size.height) {
                   heightB += 50;
@@ -117,7 +117,7 @@ class _GamePageState extends State<GamePage> {
           ),
           InkWell(
             onTap: () {
-              HapticFeedback.lightImpact();
+              HapticFeedback.heavyImpact();
               setState(() {
                 if (heightA + 50 < MediaQuery.of(context).size.height) {
                   heightA += 50;
