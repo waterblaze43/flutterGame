@@ -13,45 +13,41 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Main Page"),
-        centerTitle: false,
-      ),
-      body: Center(
-        child: MaterialButton(
-          color: Colors.blue,
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SecondPage(),
-                ));
-          },
-          child: Text("Go to second Page"),
+        body: Column(
+      children: [
+        Container(
+          color: Colors.blueAccent,
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height / 2,
+          child: Center(child: button(context)),
         ),
-      ),
+        Container(
+          color: Colors.redAccent,
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height / 2,
+          child: Center(child: button(context)),
+        )
+      ],
+    ));
+  }
+
+  Widget button(BuildContext context) {
+    return MaterialButton(
+      onPressed: () {},
+      height: 150,
+      minWidth: 150,
+      color: Colors.white,
+      shape: CircleBorder(),
+      child: Text("Start"),
     );
   }
 }
 
-class SecondPage extends StatelessWidget {
-  const SecondPage({super.key});
+class GamePage extends StatelessWidget {
+  GamePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Second Page"),
-        backgroundColor: Colors.red,
-        automaticallyImplyLeading: false,
-      ),
-      body: MaterialButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Center(child: Text("Go back")),
-      ),
-    );
+    return Scaffold();
   }
 }
