@@ -1,3 +1,4 @@
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import 'package:audioplayers/audioplayers.dart';
@@ -20,39 +21,45 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Center(child: button(context)),
-        Align(
-          alignment: Alignment.topLeft,
-          child: Container(
-            color: Colors.blueAccent,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+          body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Center(child: button(context)),
+          Align(
+            alignment: Alignment.topLeft,
+            child: Container(
+              color: Colors.blueAccent,
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height / 2,
+            ),
+          ),
+          Container(
+            color: Colors.redAccent,
             width: double.infinity,
             height: MediaQuery.of(context).size.height / 2,
           ),
-        ),
-        Container(
-          color: Colors.redAccent,
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height / 2,
-        ),
-        Center(child: button(context)),
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: nameEntry(context, "A", textControllerA, Colors.redAccent),
+          Center(child: button(context)),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: nameEntry(context, "A", textControllerA, Colors.redAccent),
+            ),
           ),
-        ),
-        SafeArea(
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: nameEntry(context, "B", textControllerB, Colors.blueAccent),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child:
+                  nameEntry(context, "B", textControllerB, Colors.blueAccent),
+            ),
           ),
-        ),
-      ],
-    ));
+        ],
+      )),
+    );
   }
 
   Widget nameEntry(BuildContext context, String player,
@@ -85,6 +92,22 @@ class MainPage extends StatelessWidget {
                   builder: (context) => GamePage(
                       playerA: textControllerA.text,
                       playerB: textControllerB.text)));
+        } else {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                    title: Text("Alert"),
+                    content: Text(
+                        "Please Fill Player ${textControllerA.text == "" && textControllerB.text == "" ? "A and B" : textControllerA.text == "" ? "A" : "B"} Name."),
+                    actions: [
+                      CupertinoButton(
+                          child: Text("Ok"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          })
+                    ],
+                  ));
         }
       },
       height: 150,
