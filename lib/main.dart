@@ -1,10 +1,11 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: GamePage(),
+    home: SafeArea(child: MainPage()),
   ));
 }
 
@@ -61,6 +62,30 @@ class _GamePageState extends State<GamePage> {
   int scoreB = 0;
   bool initialized = false;
 
+  late AudioPlayer player = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+
+    player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+
+    // Start the player as soon as the app is displayed.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await player.setSource(AssetSource('start.wav'));
+      await player.resume();
+    });
+  }
+
+  @override
+  void dispose() {
+    // Release all sources and dispose the player.
+    player.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!initialized) {
@@ -76,9 +101,9 @@ class _GamePageState extends State<GamePage> {
         children: [
           InkWell(
             onTap: () {
-              HapticFeedback.mediumImpact();
+              HapticFeedback.heavyImpact();
               setState(() {
-                if (heightB + 50 < MediaQuery.of(context).size.height) {
+                if (heightB + 50 < MediaQuery.of(context).size.height - 80) {
                   heightB += 50;
                   heightA -= 50;
                   scoreB += 5;
@@ -86,7 +111,9 @@ class _GamePageState extends State<GamePage> {
                 } else {
                   heightB = MediaQuery.of(context).size.height;
                   heightA = 0;
-                  print("B won");
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => ResultPage(
+                          winner: "B", winnerColor: Colors.blueAccent)));
                 }
               });
             },
@@ -119,7 +146,7 @@ class _GamePageState extends State<GamePage> {
             onTap: () {
               HapticFeedback.heavyImpact();
               setState(() {
-                if (heightA + 50 < MediaQuery.of(context).size.height) {
+                if (heightA + 50 < MediaQuery.of(context).size.height - 80) {
                   heightA += 50;
                   heightB -= 50;
                   scoreA += 5;
@@ -127,7 +154,9 @@ class _GamePageState extends State<GamePage> {
                 } else {
                   heightA = MediaQuery.of(context).size.height;
                   heightB = 0;
-                  print("A won");
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => ResultPage(
+                          winner: "A", winnerColor: Colors.redAccent)));
                 }
               });
             },
@@ -157,6 +186,81 @@ class _GamePageState extends State<GamePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ResultPage extends StatefulWidget {
+  String winner = "";
+  Color winnerColor = Colors.white;
+
+  ResultPage({super.key, required this.winner, required this.winnerColor});
+
+  @override
+  State<ResultPage> createState() => _ResultPageState();
+}
+
+class _ResultPageState extends State<ResultPage> {
+  Color loserColor = Colors.white;
+
+  late AudioPlayer player = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+
+    player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+
+    // Start the player as soon as the app is displayed.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await player.setSource(AssetSource('victory.mp3'));
+      await player.resume();
+    });
+  }
+
+  @override
+  void dispose() {
+    // Release all sources and dispose the player.
+    player.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    loserColor = widget.winnerColor == Colors.redAccent
+        ? Colors.blueAccent
+        : Colors.redAccent;
+    return Scaffold(
+      body: Container(
+        color: widget.winnerColor,
+        child: Center(
+          child: Column(
+            spacing: 40,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Player ${widget.winner} has Won the Game",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              MaterialButton(
+                height: 45,
+                minWidth: 120,
+                onPressed: () {
+                  Navigator.pop(context);
+                  HapticFeedback.vibrate();
+                },
+                color: loserColor,
+                child: Text(
+                  "Play Again",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
